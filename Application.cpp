@@ -1,4 +1,15 @@
 // NOTE: Logging system generated with AI assistance
+//
+// CHANGES AND ADDITIONS TO OTHER FILES:
+// - Application.h: Added messageType struct with text and color fields (ImVec4).
+//                  Added MESSAGE_TYPE_INFO, MESSAGE_TYPE_WARN, MESSAGE_TYPE_ERROR constants.
+//                  Added logging functions: ConsoleLog, FileLog, DebugLog, DebugInfo, DebugWarn, DebugError.
+//                  Added logging window management: ShowLogWindow, ToggleLogWindow, IsLogWindowVisible.
+// - test.h: Created new file with runTests() function declaration.
+// - test.cpp: Created new file with test UI window featuring buttons to test Info/Warn/Error logging.
+// - CMakeLists.txt: Added test.cpp to build target.
+// - .gitignore: Added logs/ directory to ignore list.
+// - logs/: Created directory for log file output (logs/debug.log).
 
 #include "Application.h"
 #include "test.h"
