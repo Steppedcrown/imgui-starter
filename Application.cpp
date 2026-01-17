@@ -160,13 +160,19 @@ namespace ClassGame {
             {
                 ImGui::Checkbox("Auto-scroll", &g_AutoScroll);
                 ImGui::SameLine();
-                ImGui::Text("Filter:");
-                ImGui::SameLine();
-                ImGui::Checkbox("Info", &g_ShowInfo);
-                ImGui::SameLine();
-                ImGui::Checkbox("Warn", &g_ShowWarn);
-                ImGui::SameLine();
-                ImGui::Checkbox("Error", &g_ShowError);
+                
+                // Filter popup
+                if (ImGui::Button("Filter"))
+                    ImGui::OpenPopup("filter_popup");
+                
+                if (ImGui::BeginPopup("filter_popup"))
+                {
+                    ImGui::Checkbox("Info", &g_ShowInfo);
+                    ImGui::Checkbox("Warn", &g_ShowWarn);
+                    ImGui::Checkbox("Error", &g_ShowError);
+                    ImGui::EndPopup();
+                }
+                
                 ImGui::SameLine();
                 if (ImGui::Button("Clear"))
                 {
