@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "test.h"
 #include "imgui/imgui.h"
 #include <vector>
 #include <string>
@@ -94,6 +95,9 @@ namespace ClassGame {
         //
         void RenderGame() 
         {
+            // Test game functionality, currently just tests logging system
+            runTests();
+
             ImGui::DockSpaceOverViewport();
             ImGui::ShowDemoWindow();
 
