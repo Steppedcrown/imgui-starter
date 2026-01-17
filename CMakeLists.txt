@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.5.0...3.27)
 project(tictactoe VERSION 0.1.0 LANGUAGES C CXX)
 
 # check for macOS
