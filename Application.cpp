@@ -30,10 +30,14 @@ namespace ClassGame {
         struct LogEntry {
             std::string message;
             ImVec4 color;
+            const char* typeText;  // Store the type text for filtering
         };
 
         static bool g_LogWindowVisible = true;
         static bool g_AutoScroll = true;
+        static bool g_ShowInfo = true;
+        static bool g_ShowWarn = true;
+        static bool g_ShowError = true;
         static std::vector<LogEntry> g_LogMessages;
         static std::mutex g_LogMutex;
 
@@ -67,7 +71,7 @@ namespace ClassGame {
             std::lock_guard<std::mutex> lock(g_LogMutex);
             std::ostringstream oss;
             oss << "[" << CurrentTimestamp() << "] " << type.text << " " << message;
-            g_LogMessages.emplace_back(LogEntry{oss.str(), type.color});
+            g_LogMessages.emplace_back(LogEntry{oss.str(), type.color, type.text});
         }
 
         void FileLog(const char* message)
@@ -156,6 +160,14 @@ namespace ClassGame {
             {
                 ImGui::Checkbox("Auto-scroll", &g_AutoScroll);
                 ImGui::SameLine();
+                ImGui::Text("Filter:");
+                ImGui::SameLine();
+                ImGui::Checkbox("Info", &g_ShowInfo);
+                ImGui::SameLine();
+                ImGui::Checkbox("Warn", &g_ShowWarn);
+                ImGui::SameLine();
+                ImGui::Checkbox("Error", &g_ShowError);
+                ImGui::SameLine();
                 if (ImGui::Button("Clear"))
                 {
                     std::lock_guard<std::mutex> lock(g_LogMutex);
@@ -209,8 +221,16 @@ namespace ClassGame {
                     std::lock_guard<std::mutex> lock(g_LogMutex);
                     for (const auto& entry : g_LogMessages)
                     {
-                        ImVec4 color(entry.color.x, entry.color.y, entry.color.z, entry.color.w);
-                        ImGui::TextColored(color, "%s", entry.message.c_str());
+                        bool show = false;
+                        if (strcmp(entry.typeText, "[INFO]") == 0 && g_ShowInfo) show = true;
+                        else if (strcmp(entry.typeText, "[WARN]") == 0 && g_ShowWarn) show = true;
+                        else if (strcmp(entry.typeText, "[ERROR]") == 0 && g_ShowError) show = true;
+                        
+                        if (show)
+                        {
+                            ImVec4 color(entry.color.x, entry.color.y, entry.color.z, entry.color.w);
+                            ImGui::TextColored(color, "%s", entry.message.c_str());
+                        }
                     }
                     if (g_AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
                     {
