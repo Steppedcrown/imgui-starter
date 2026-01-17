@@ -9,4 +9,9 @@ namespace ClassGame {
     void ShowLogWindow(bool* p_open = nullptr);
     void ToggleLogWindow();
     bool IsLogWindowVisible();
+
+    // Logging outputs
+    void ConsoleLog(const char* message);
+    void FileLog(const char* message);
+    void DebugLog(const char* message);
 }
