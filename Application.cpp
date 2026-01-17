@@ -16,9 +16,14 @@ namespace ClassGame {
         //
         // our global variables
         //
+        struct LogEntry {
+            std::string message;
+            ImVec4 color;
+        };
+
         static bool g_LogWindowVisible = true;
         static bool g_AutoScroll = true;
-        static std::vector<std::string> g_LogMessages;
+        static std::vector<LogEntry> g_LogMessages;
         static std::mutex g_LogMutex;
 
         static std::string CurrentTimestamp()
@@ -45,13 +50,13 @@ namespace ClassGame {
             return file_path.substr(0, pos);
         }
 
-        void ConsoleLog(const char* message)
+        void ConsoleLog(const char* message, const messageType& type)
         {
             if (!message) return;
             std::lock_guard<std::mutex> lock(g_LogMutex);
             std::ostringstream oss;
-            oss << "[" << CurrentTimestamp() << "] " << message;
-            g_LogMessages.emplace_back(oss.str());
+            oss << "[" << CurrentTimestamp() << "] " << type.text << " " << message;
+            g_LogMessages.emplace_back(LogEntry{oss.str(), type.color});
         }
 
         void FileLog(const char* message)
@@ -75,10 +80,25 @@ namespace ClassGame {
             ofs.flush();
         }
 
-        void DebugLog(const char* message)
+        void DebugLog(const char* message, const messageType& type)
         {
-            ConsoleLog(message);
+            ConsoleLog(message, type);
             FileLog(message);
+        }
+
+        void DebugInfo(const char* message)
+        {
+            DebugLog(message, MESSAGE_TYPE_INFO);
+        }
+
+        void DebugWarn(const char* message)
+        {
+            DebugLog(message, MESSAGE_TYPE_WARN);
+        }
+
+        void DebugError(const char* message)
+        {
+            DebugLog(message, MESSAGE_TYPE_ERROR);
         }
 
         //
@@ -138,7 +158,7 @@ namespace ClassGame {
                     {
                         std::lock_guard<std::mutex> lock(g_LogMutex);
                         if (!g_LogMessages.empty())
-                            last = g_LogMessages.back();
+                            last = g_LogMessages.back().message;
                     }
                     if (!last.empty())
                     {
@@ -156,9 +176,9 @@ namespace ClassGame {
                         std::lock_guard<std::mutex> lock(g_LogMutex);
                         if (!g_LogMessages.empty())
                         {
-                            for (const auto& line : g_LogMessages)
+                            for (const auto& entry : g_LogMessages)
                             {
-                                all += line;
+                                all += entry.message;
                                 all += '\n';
                             }
                         }
@@ -176,9 +196,10 @@ namespace ClassGame {
                 ImGui::BeginChild("LogRegion", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
                 {
                     std::lock_guard<std::mutex> lock(g_LogMutex);
-                    for (const auto& line : g_LogMessages)
+                    for (const auto& entry : g_LogMessages)
                     {
-                        ImGui::TextUnformatted(line.c_str());
+                        ImVec4 color(entry.color.x, entry.color.y, entry.color.z, entry.color.w);
+                        ImGui::TextColored(color, "%s", entry.message.c_str());
                     }
                     if (g_AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
                     {

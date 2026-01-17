@@ -13,7 +13,9 @@ namespace ClassGame {
         
         if (delta_time.count() >= 1)
         {
-            DebugLog("hello world");
+            DebugInfo("This is an info message.");
+            DebugWarn("This is a warning message.");
+            DebugError("This is an error message.");
             last_log_time = current_time;
         }
     }
