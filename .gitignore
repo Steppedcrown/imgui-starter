@@ -1,0 +1,32 @@
+# Build directories
+build/
+
+# CMake cache
+CMakeCache.txt
+CMakeFiles/
+CMakeUserPresets.json
+cmake_install.cmake
+
+# Compiled binaries and object files
+*.o
+*.obj
+*.a
+*.lib
+*.dylib
+*.so
+*.exe
+
+# IDE and editor files
+.vscode/
+.idea/
+*.xcodeproj/
+*.xcworkspace/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Dependencies
+/usr/local/
+*.vcxproj
+*.vcxproj.filters
