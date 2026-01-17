@@ -2,21 +2,30 @@
 
 #include "test.h"
 #include "Application.h"
-#include <chrono>
+#include "imgui/imgui.h"
 
 namespace ClassGame {
     void runTests()
     {
-        static auto last_log_time = std::chrono::steady_clock::now();
-        auto current_time = std::chrono::steady_clock::now();
-        auto delta_time = std::chrono::duration_cast<std::chrono::seconds>(current_time - last_log_time);
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
+        ImGui::Begin("Testing Terminal");
         
-        if (delta_time.count() >= 1)
+        if (ImGui::Button("Log Info"))
         {
             DebugInfo("This is an info message.");
-            DebugWarn("This is a warning message.");
-            DebugError("This is an error message.");
-            last_log_time = current_time;
         }
+        
+        if (ImGui::Button("Log Warning"))
+        {
+            DebugWarn("This is a warning message.");
+        }
+        
+        if (ImGui::Button("Log Error"))
+        {
+            DebugError("This is an error message.");
+        }
+        
+        ImGui::End();
     }
 }
