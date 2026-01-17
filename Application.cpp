@@ -76,7 +76,7 @@ namespace ClassGame {
             ImGui::DockSpaceOverViewport();
             ImGui::ShowDemoWindow();
 
-            ImGui::Begin("ImGui Log Demo");
+            /*ImGui::Begin("ImGui Log Demo");
             ImGui::LogButtons();
 
             if (ImGui::Button("Copy \"Hello, world!\" to clipboard"))
@@ -85,7 +85,7 @@ namespace ClassGame {
                 ImGui::LogText("Hello, world!");
                 ImGui::LogFinish();
             }
-            ImGui::End();
+            ImGui::End();*/
 
             // Draw our Debug Console
             ShowLogWindow();
@@ -112,6 +112,23 @@ namespace ClassGame {
                 {
                     std::lock_guard<std::mutex> lock(g_LogMutex);
                     g_LogMessages.clear();
+                }
+
+                ImGui::SameLine();
+                if (ImGui::Button("Copy last to clipboard"))
+                {
+                    std::string last;
+                    {
+                        std::lock_guard<std::mutex> lock(g_LogMutex);
+                        if (!g_LogMessages.empty())
+                            last = g_LogMessages.back();
+                    }
+                    if (!last.empty())
+                    {
+                        ImGui::LogToClipboard();
+                        ImGui::LogText("%s", last.c_str());
+                        ImGui::LogFinish();
+                    }
                 }
 
                 ImGui::Separator();
