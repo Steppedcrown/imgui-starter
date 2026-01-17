@@ -1,3 +1,5 @@
+// NOTE: Logging system generated with AI assistance
+
 #include "Application.h"
 #include "test.h"
 #include "imgui/imgui.h"

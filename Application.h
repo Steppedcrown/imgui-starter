@@ -1,3 +1,5 @@
+// NOTE: Logging system generated with AI assistance
+
 #pragma once
 
 namespace ClassGame {

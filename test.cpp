@@ -1,3 +1,5 @@
+// NOTE: Test framework generated with AI assistance
+
 #include "test.h"
 #include "Application.h"
 #include <chrono>
