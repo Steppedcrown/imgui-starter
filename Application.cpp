@@ -7,6 +7,7 @@
 #include <sstream>
 #include <chrono>
 #include <ctime>
+#include <filesystem>
 
 namespace ClassGame {
         //
@@ -33,6 +34,14 @@ namespace ClassGame {
             return std::string(buf);
         }
 
+        static std::string GetProjectRoot()
+        {
+            std::string file_path = __FILE__;
+            size_t pos = file_path.find_last_of("/\\");
+            if (pos == std::string::npos) return ".";
+            return file_path.substr(0, pos);
+        }
+
         void ConsoleLog(const char* message)
         {
             if (!message) return;
@@ -45,7 +54,19 @@ namespace ClassGame {
         void FileLog(const char* message)
         {
             if (!message) return;
-            std::ofstream ofs("app.log", std::ios::app);
+
+            namespace fs = std::filesystem;
+            static std::string project_root = GetProjectRoot();
+            std::string log_dir = project_root + "/logs";
+            
+            // Create logs directory if it doesn't exist
+            if (!fs::exists(log_dir))
+            {
+                fs::create_directory(log_dir);
+            }
+
+            std::string log_file = log_dir + "/debug.log";
+            std::ofstream ofs(log_file, std::ios::app);
             if (!ofs.is_open()) return;
             ofs << "[" << CurrentTimestamp() << "] " << message << '\n';
             ofs.flush();
@@ -76,17 +97,6 @@ namespace ClassGame {
             ImGui::DockSpaceOverViewport();
             ImGui::ShowDemoWindow();
 
-            /*ImGui::Begin("ImGui Log Demo");
-            ImGui::LogButtons();
-
-            if (ImGui::Button("Copy \"Hello, world!\" to clipboard"))
-            {
-                ImGui::LogToClipboard();
-                ImGui::LogText("Hello, world!");
-                ImGui::LogFinish();
-            }
-            ImGui::End();*/
-
             // Draw our Debug Console
             ShowLogWindow();
         }
@@ -104,6 +114,7 @@ namespace ClassGame {
             bool* open = p_open ? p_open : &g_LogWindowVisible;
             if (!open) return;
 
+            ImGui::SetNextWindowSize(ImVec2(500, 250), ImGuiCond_FirstUseEver);
             if (ImGui::Begin("Debug Console", open))
             {
                 ImGui::Checkbox("Auto-scroll", &g_AutoScroll);
@@ -127,6 +138,29 @@ namespace ClassGame {
                     {
                         ImGui::LogToClipboard();
                         ImGui::LogText("%s", last.c_str());
+                        ImGui::LogFinish();
+                    }
+                }
+
+                ImGui::SameLine();
+                if (ImGui::Button("Copy all to clipboard"))
+                {
+                    std::string all;
+                    {
+                        std::lock_guard<std::mutex> lock(g_LogMutex);
+                        if (!g_LogMessages.empty())
+                        {
+                            for (const auto& line : g_LogMessages)
+                            {
+                                all += line;
+                                all += '\n';
+                            }
+                        }
+                    }
+                    if (!all.empty())
+                    {
+                        ImGui::LogToClipboard();
+                        ImGui::LogText("%s", all.c_str());
                         ImGui::LogFinish();
                     }
                 }
